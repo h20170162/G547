@@ -1,0 +1,1 @@
+cmd_/home/guru/Desktop/G547/adc_channel_assign1/adc.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/guru/Desktop/G547/adc_channel_assign1/adc.ko /home/guru/Desktop/G547/adc_channel_assign1/adc.o /home/guru/Desktop/G547/adc_channel_assign1/adc.mod.o ;  true
