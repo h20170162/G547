@@ -55,7 +55,7 @@ static int usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num)
 	struct i2c_msg *pmsg;
 	int i, ret;
 
-	dev_dbg(&adapter->dev, "master xfer %d messages:\n", num);
+	dev_info(&adapter->dev, "Inside master xfer\n");
 
 	pstatus = kmalloc(sizeof(*pstatus), GFP_KERNEL);
 	if (!pstatus)
@@ -156,15 +156,16 @@ static const struct i2c_algorithm usb_algorithm = {
  * Future Technology Devices International Ltd., later a pair was
  * bought from EZPrototypes
  */
-static const struct usb_device_id i2c_tiny_usb_table[] = {
+static const struct usb_device_id usb_to_i2c_table[] = {
 	{ USB_DEVICE(0x0403, 0xc631) },   /* FTDI */
+	{ USB_DEVICE(0x16c0, 0x05dc) },   /* usb_to_i2c */
 	{ }                               /* Terminating entry */
 };
 
-MODULE_DEVICE_TABLE(usb, i2c_tiny_usb_table);
+MODULE_DEVICE_TABLE(usb, usb_to_i2c_table);
 
 /* Structure to hold all of our device specific stuff */
-struct i2c_tiny_usb {
+struct usb_to_i2c {
 	struct usb_device *usb_dev; /* the usb device for this device */
 	struct usb_interface *interface; /* the interface for this device */
 	struct i2c_adapter adapter; /* i2c related things */
@@ -173,7 +174,7 @@ struct i2c_tiny_usb {
 static int usb_read(struct i2c_adapter *adapter, int cmd,
 		    int value, int index, void *data, int len)
 {
-	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
+	struct usb_to_i2c *dev = (struct usb_to_i2c *)adapter->algo_data;
 	void *dmadata = kmalloc(len, GFP_KERNEL);
 	int ret;
 
@@ -193,7 +194,7 @@ static int usb_read(struct i2c_adapter *adapter, int cmd,
 static int usb_write(struct i2c_adapter *adapter, int cmd,
 		     int value, int index, void *data, int len)
 {
-	struct i2c_tiny_usb *dev = (struct i2c_tiny_usb *)adapter->algo_data;
+	struct usb_to_i2c *dev = (struct usb_to_i2c *)adapter->algo_data;
 	void *dmadata = kmemdup(data, len, GFP_KERNEL);
 	int ret;
 
@@ -209,16 +210,16 @@ static int usb_write(struct i2c_adapter *adapter, int cmd,
 	return ret;
 }
 
-static void i2c_tiny_usb_free(struct i2c_tiny_usb *dev)
+static void usb_to_i2c_free(struct usb_to_i2c *dev)
 {
 	usb_put_dev(dev->usb_dev);
 	kfree(dev);
 }
 
-static int i2c_tiny_usb_probe(struct usb_interface *interface,
+static int usb_to_i2c_probe(struct usb_interface *interface,
 			      const struct usb_device_id *id)
 {
-	struct i2c_tiny_usb *dev;
+	struct usb_to_i2c *dev;
 	int retval = -ENOMEM;
 	u16 version;
 
@@ -265,36 +266,37 @@ static int i2c_tiny_usb_probe(struct usb_interface *interface,
 	i2c_add_adapter(&dev->adapter);
 
 	/* inform user about successful attachment to i2c layer */
+	printk(KERN_INFO "i2c-%d adapter created successfully\n",dev->adapter.nr);
 	dev_info(&dev->adapter.dev, "connected usb_to_i2c device\n");
 
 	return 0;
 
  error:
 	if (dev)
-		i2c_tiny_usb_free(dev);
+		usb_to_i2c_free(dev);
 
 	return retval;
 }
 
-static void i2c_tiny_usb_disconnect(struct usb_interface *interface)
+static void usb_to_i2c_disconnect(struct usb_interface *interface)
 {
-	struct i2c_tiny_usb *dev = usb_get_intfdata(interface);
+	struct usb_to_i2c *dev = usb_get_intfdata(interface);
 
 	i2c_del_adapter(&dev->adapter);
 	usb_set_intfdata(interface, NULL);
-	i2c_tiny_usb_free(dev);
+	usb_to_i2c_free(dev);
 
-	dev_dbg(&interface->dev, "disconnected\n");
+	printk(KERN_INFO "usb_to_i2c device disconnected successfully !!!\n");
 }
 
-static struct usb_driver i2c_tiny_usb_driver = {
+static struct usb_driver usb_to_i2c_driver = {
 	.name		= "usb_to_i2c",
-	.probe		= i2c_tiny_usb_probe,
-	.disconnect	= i2c_tiny_usb_disconnect,
-	.id_table	= i2c_tiny_usb_table,
+	.probe		= usb_to_i2c_probe,
+	.disconnect	= usb_to_i2c_disconnect,
+	.id_table	= usb_to_i2c_table,
 };
 
-module_usb_driver(i2c_tiny_usb_driver);
+module_usb_driver(usb_to_i2c_driver);
 
 /* ----- end of usb layer ------------------------------------------------ */
 

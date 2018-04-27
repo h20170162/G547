@@ -23,11 +23,10 @@ int file;
   char buf[100]="";
   int addr = 0x48; /* The I2C address */
   int i=0,j;
+  unsigned char ad_cnt;
 
   printf("Enter I2C adapther Number\n");
   j=scanf("%d",&adapter_nr);
-  printf("Enter the string you want to send through I2C\n");
-  j=scanf("%s",buf);
   char buf_ip[100]="";
   snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
   file = open(filename, O_RDWR);
@@ -36,24 +35,30 @@ int file;
     return -1;
   }
   
-  
+  printf("   00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f"); 
 
-  if (ioctl(file, I2C_SLAVE, addr) < 0) {
+  for(ad_cnt=0;ad_cnt<128;ad_cnt++)
+  {
+  if (ioctl(file, I2C_SLAVE, ad_cnt) < 0) {
     printf("Failed in IOCTL \n");
     return -1;
   }
-  //buf_ip[0]=reg;
   while(buf[i] != '\0')
   {
 	  buf_ip[i]=buf[i];
 	  i++;
-  } 
-  if (write(file, buf_ip,i+1) != i+1) {
-    printf("Unable to write file i2c-%d \n",adapter_nr);
-	return -1;
   }
-    printf("successfully sent message through i2c-%d \n",adapter_nr);
+	
+  if ((ad_cnt & 0x0f) == 0) {
+        printf("\n%02x:", ad_cnt);
+  }
 
+  if (read(file, buf_ip,1) != 1)
+  	printf("--  ");
+  else
+        printf("%02x  ",ad_cnt);
+  }
+  printf("\n");
   close(file);
 
   return 0;

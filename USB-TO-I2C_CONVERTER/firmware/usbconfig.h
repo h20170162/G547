@@ -88,7 +88,6 @@ must be adapted to your hardware.
 #define	USB_CFG_DEVICE_VERSION	0x05, 0x01
 /* Version number of the device: Minor number first, then major number.
  */
-//#define	USB_CFG_VENDOR_NAME		'T', 'i', 'l', 'l', ' ', 'H', 'a', 'r', 'b', 'a', 'u', 'm'
 #define	USB_CFG_VENDOR_NAME		'S', 'a', 's', 'a', 'n', 'k'
 #define	USB_CFG_VENDOR_NAME_LEN	6
 

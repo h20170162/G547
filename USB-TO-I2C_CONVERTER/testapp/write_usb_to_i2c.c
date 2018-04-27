@@ -11,7 +11,6 @@
 #include<poll.h>
 #include<errno.h>
 #include<string.h>
-#include<ctype.h>
 
 int main()
 {
@@ -22,12 +21,16 @@ int file;
   __u8 reg = 0x01; /* Device register to access */
   __s32 res;
   char buf[100]="";
-  char buf1[100]="";
-  int addr = 0x13; /* The I2C address */
+  int addr; /* The I2C address */
   int i=0,j;
 
   printf("Enter I2C adapther Number\n");
   j=scanf("%d",&adapter_nr);
+  printf("Enter I2C slave device address in decimal\n");
+  j=scanf("%d",&addr);
+  printf("Enter the string you want to send through I2C\n");
+  j=scanf("%s",buf);
+  char buf_ip[100]="";
   snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
   file = open(filename, O_RDWR);
   if (file < 0) {
@@ -35,22 +38,23 @@ int file;
     return -1;
   }
   
+  
 
   if (ioctl(file, I2C_SLAVE, addr) < 0) {
     printf("Failed in IOCTL \n");
     return -1;
   }
-  if (read(file, buf,100) != 100) {
-    printf("Unable to read from i2c-%d \n",adapter_nr);
+  //buf_ip[0]=reg;
+  while(buf[i] != '\0')
+  {
+	  buf_ip[i]=buf[i];
+	  i++;
+  } 
+  if (write(file, buf_ip,i+1) != i+1) {
+    printf("Unable to write file i2c-%d \n",adapter_nr);
 	return -1;
   }
-    while(isalpha(buf[i]))
-    {
-	buf1[i]=buf[i];
-	i++;
-    }
-    printf("successfully received message through i2c-%d \n",adapter_nr);
-    printf("Received Message : %s\n",buf1);
+    printf("successfully sent message through i2c-%d \n",adapter_nr);
 
   close(file);
 
