@@ -1,1 +1,0 @@
-cmd_/home/sasanka/Desktop/USB-TO-I2C_Finall/kernel/usb_to_i2c.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/sasanka/Desktop/USB-TO-I2C_Finall/kernel/usb_to_i2c.ko /home/sasanka/Desktop/USB-TO-I2C_Finall/kernel/usb_to_i2c.o /home/sasanka/Desktop/USB-TO-I2C_Finall/kernel/usb_to_i2c.mod.o ;  true
