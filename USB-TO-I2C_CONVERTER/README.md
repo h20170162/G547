@@ -1,5 +1,10 @@
 # usb-to-i2c
 
+## Prerequisite for the project
+
+As this project borrows the USB Vendor ID and Product ID from the project "i2c-tiny-usb", which is now a part of linux kernel, hence before executing this project we have to remove the kernel module of i2c-tiny-usb project named as "i2c_tiny_usb". Otherwise our usb probe function will never be called.
+
+* Command to remove the i2c-tiny-usb module : - "sudo rmmode i2c_tiny_usb".
 
 ## Summary
 
