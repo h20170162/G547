@@ -111,6 +111,5 @@ The i2c_usb demo application can support multiple I2C client chips. Further chip
 
 ## Note
 Please note that, here in this project we have developed just an USB-I2C converter prototype with out client drivers.
-To access any client device, you have to write separate kernel driver.
-Examples can be seen at : www.github.com/torvalds/linux/driver/i2c/i2c-tiny-usb/kernel/chips.
+To access any client device, you have to write separate kernel driver for client devices.
  
